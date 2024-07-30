@@ -1,4 +1,4 @@
-Approach 1: Using stack (one pass)
+// Approach 1: Using stack (one pass)
 
   class Solution {
 
@@ -27,7 +27,7 @@ Approach 1: Using stack (one pass)
     }
 }
 
-Approach 2: Three-Pass Count Method TC 0(n) SC 0(2n)
+// Approach 2: Three-Pass Count Method TC 0(n) SC 0(2n)
 
   class Solution {
 
@@ -62,7 +62,7 @@ Approach 2: Three-Pass Count Method TC 0(n) SC 0(2n)
     }
 }
 
-Approach 3: Combined Pass Method TC O(n) SC o(n)
+// Approach 3: Combined Pass Method TC O(n) SC o(n)
 
 class Solution {
 
@@ -90,7 +90,7 @@ class Solution {
     }
 }
 
-Approach 4: Two-Variable Method SC O(1) TC O(n)
+// Approach 4: Two-Variable Method SC O(1) TC O(n)
 
   class Solution {
 
