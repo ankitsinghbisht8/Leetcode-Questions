@@ -1,55 +1,49 @@
 class Solution {
+
     public int[] countMentions(int numberOfUsers, List<List<String>> events) {
-        TreeMap<Integer, List<List<String>>> treemap = new TreeMap<>();
-        for (List<String> ev : events) {
-            int t = Integer.parseInt(ev.get(1));
-            treemap.computeIfAbsent(t, k -> new ArrayList<>()).add(ev);
-        }
-
-        int[] mentions = new int[numberOfUsers];
-        boolean[] isOnline = new boolean[numberOfUsers];
-        int[] offlineUntil = new int[numberOfUsers];
-        Arrays.fill(isOnline, true);
-
-        for (Map.Entry<Integer, List<List<String>>> entry : treemap.entrySet()) {
-
-            int t = entry.getKey();
-            List<List<String>> evs = entry.getValue();
-
-            for (int i = 0; i < numberOfUsers; i++) {
-                if (!isOnline[i] && offlineUntil[i] <= t) {
-                    isOnline[i] = true;
-                    offlineUntil[i] = 0;
-                }
+        events.sort((a, b) -> {
+            int timeA = Integer.parseInt(a.get(1));
+            int timeB = Integer.parseInt(b.get(1));
+            if (timeA != timeB) {
+                return Integer.compare(timeA, timeB);
             }
+            boolean aIsMessage = a.get(0).equals("MESSAGE");
+            boolean bIsMessage = b.get(0).equals("MESSAGE");
+            return Boolean.compare(aIsMessage, bIsMessage);
+        });
 
-            for (List<String> ev : evs) {
-                if (ev.get(0).equals("OFFLINE")) {
-                    int id = Integer.parseInt(ev.get(2));
-                    isOnline[id] = false;
-                    offlineUntil[id] = t + 60;
-                }
-            }
+        int[] count = new int[numberOfUsers];
+        int[] nextOnlineTime = new int[numberOfUsers];
 
-            for (List<String> ev : evs) {
-                if (!ev.get(0).equals("MESSAGE")) continue;
-                String[] tokens = ev.get(2).split("\\s+");
+        for (List<String> event : events) {
+            int curTime = Integer.parseInt(event.get(1));
+            String type = event.get(0);
 
-                for (String token : tokens) {
-                    if (token.equals("ALL")) {
-                        for (int i = 0; i < numberOfUsers; ++i) mentions[i]++;
-                    } 
-                    else if (token.equals("HERE")) {
-                        for (int i = 0; i < numberOfUsers; ++i)
-                            if (isOnline[i]) mentions[i]++;
-                    } 
-                    else if (token.startsWith("id")) {
-                        int id = Integer.parseInt(token.substring(2));
-                        if (id >= 0 && id < numberOfUsers) mentions[id]++;
+            if (type.equals("MESSAGE")) {
+                String target = event.get(2);
+                if (target.equals("ALL")) {
+                    for (int i = 0; i < numberOfUsers; i++) {
+                        count[i]++;
+                    }
+                } else if (target.equals("HERE")) {
+                    for (int i = 0; i < numberOfUsers; i++) {
+                        if (nextOnlineTime[i] <= curTime) {
+                            count[i]++;
+                        }
+                    }
+                } else {
+                    String[] users = target.split(" ");
+                    for (String user : users) {
+                        int idx = Integer.parseInt(user.substring(2));
+                        count[idx]++;
                     }
                 }
+            } else {
+                int idx = Integer.parseInt(event.get(2));
+                nextOnlineTime[idx] = curTime + 60;
             }
         }
-        return mentions;
+
+        return count;
     }
 }
