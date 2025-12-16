@@ -10,7 +10,9 @@ class Solution {
         }
 
         for (int[] h : hierarchy) {
-            adList[h[0] - 1].add(h[1] - 1);
+            int u = h[0] - 1;
+            int v = h[1] - 1;
+            adList[u].add(v);
         }
         
         dfs(0, present, future, budget);
@@ -22,6 +24,44 @@ class Solution {
         return solution;
     }
 
+    private void dfs(int v, int[] present, int[] future, int budget) {
+        List<Integer> children = adList[v];
+        int childCount = children.size();
+        
+        int[][] childDp = new int[3][budget + 1];
+        
+        for (int child : children) {
+            dfs(child, present, future, budget);
+            
+            for (int rep = 0; rep < 3; rep++) {
+                int[] temp = childDp[rep].clone();
+                for (int b = budget; b >= 0; b--) {
+                    for (int cb = 0; cb <= budget - b; cb++) {
+                        int childProfit = getCost(child, cb, rep);
+                        if (temp[b] + childProfit > childDp[rep][b + cb]) {
+                            childDp[rep][b + cb] = temp[b] + childProfit;
+                        }
+                    }
+                }
+            }
+        }
+        
+        int profit = future[v] - present[v];
+        int profitWithDiscount = future[v] - present[v] / 2;
+        
+        for (int b = 0; b <= budget; b++) {
+            dp[v][b][0] = childDp[0][b];
+            
+            if (b >= present[v]) {
+                dp[v][b][1] = childDp[1][b - present[v]] + profit;
+            }
+            
+            if (b >= present[v] / 2) {
+                dp[v][b][2] = childDp[2][b - present[v] / 2] + profitWithDiscount;
+            }
+        }
+    }
+
     private int getCost(int node, int curCost, int rep) {
         if (rep == 0) {
             return Math.max(dp[node][curCost][0], dp[node][curCost][1]);
@@ -29,64 +69,6 @@ class Solution {
             return Math.max(dp[node][curCost][0], dp[node][curCost][2]);
         } else {
             return Math.max(dp[node][curCost][0], Math.max(dp[node][curCost][1], dp[node][curCost][2]));
-        }
-    }
-
-    private void dfs(int v, int[] present, int[] future, int budget) {
-        if (budget <= 0) return;
-
-        int profit = future[v] - present[v];
-        int halfPresent = present[v] / 2;
-        int profitWithDiscount = future[v] - halfPresent;
-        
-        List<Integer> childNodes = adList[v];
-        int len = childNodes.size();
-        
-        for (int u : childNodes) {
-            dfs(u, present, future, budget);
-        }
-        
-        for (int rep = 0; rep < 3; rep++) {
-            int[][] childDp = new int[len + 1][budget + 1];
-            
-            for (int l = 0; l < len; l++) {
-                int node = childNodes.get(l);
-                int[] prevRow = childDp[l];
-                int[] currRow = childDp[l + 1];
-                
-                for (int b = 0; b <= budget; b++) {
-                    if (prevRow[b] == 0 && b > 0) continue;
-                    
-                    currRow[b] = Math.max(currRow[b], prevRow[b]);
-                    
-                    int maxChildBudget = budget - b;
-                    for (int cb = 0; cb <= maxChildBudget; cb++) {
-                        int childCost = getCost(node, cb, rep);
-                        if (childCost == 0 && cb > 0) continue;
-                        
-                        int newCost = prevRow[b] + childCost;
-                        if (newCost > currRow[b + cb]) {
-                            currRow[b + cb] = newCost;
-                        }
-                    }
-                }
-            }
-            
-            int[] lastRow = childDp[len];
-            if (rep == 0) {
-                for (int b = 0; b <= budget; b++) {
-                    dp[v][b][0] = lastRow[b];
-                }
-            } else if (rep == 1) {
-                int cost = present[v];
-                for (int b = cost; b <= budget; b++) {
-                    dp[v][b][1] = lastRow[b - cost] + profit;
-                }
-            } else {
-                for (int b = halfPresent; b <= budget; b++) {
-                    dp[v][b][2] = lastRow[b - halfPresent] + profitWithDiscount;
-                }
-            }
         }
     }
 }
