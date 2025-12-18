@@ -1,19 +1,31 @@
 class Solution {
     public long maxProfit(int[] prices, int[] strategy, int k) {
-        int n = prices.length;
-        long[] profitSum = new long[n + 1];
-        long[] priceSum = new long[n + 1];
-        for (int i = 0; i < n; i++) {
-            profitSum[i + 1] = profitSum[i] + (long) prices[i] * strategy[i];
-            priceSum[i + 1] = priceSum[i] + prices[i];
+        long total = 0L;
+        long sum = 0L;
+        for(int i = 0;i<k/2;i++){
+            total += prices[i]*strategy[i];
+
+            sum -= prices[i]*strategy[i];
         }
-        long res = profitSum[n];
-        for (int i = k - 1; i < n; i++) {
-            long left = profitSum[i - k + 1];
-            long right = profitSum[n] - profitSum[i + 1];
-            long changeProfit = priceSum[i + 1] - priceSum[i - k / 2 + 1];
-            res = Math.max(res, left + changeProfit + right);
+
+        for(int i = k/2;i<k;i++){
+            total += prices[i]*strategy[i];
+            sum += prices[i]*(1-strategy[i]);
         }
-        return res;
+        long max = Math.max(sum, 0);
+        
+        for(int i = k;i<prices.length;i++){
+
+            total += prices[i]*strategy[i];
+
+            sum += prices[i]*(1-strategy[i]);
+
+            sum -= prices[i-k/2];
+
+            sum += prices[i-k]*strategy[i-k];
+
+            max = Math.max(max, sum);
+        }
+        return total + max;
     }
 }
