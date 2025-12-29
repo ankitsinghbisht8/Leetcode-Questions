@@ -1,33 +1,44 @@
 class Solution {
-    Map<String, List<Character>> rules = new HashMap<>();
-    Set<String> bad = new HashSet<>();
-
-    public boolean pyramidTransition(String bottom, List<String> allowed) {
-        for (String s : allowed) {
-            rules.computeIfAbsent(s.substring(0, 2), k -> new ArrayList<>())
-                 .add(s.charAt(2));
+        public boolean pyramidTransition(String bottom, List<String> allowed) {
+        final int[][] pyramid = new int[8][8];
+        // if BCD, the depth is 2, so depth = bottom.length() - 1
+        final int depth = bottom.length() - 1;
+        // convert char to int, then fill the bottom of pyramid
+        for (int i = 0; i < bottom.length(); i++) {
+            pyramid[depth][i] = bottom.charAt(i) - 'A';
         }
-        return dfs(bottom, 0, new StringBuilder());
+        // 3 dimensional array to store allowed
+        final boolean[][][] candidates = new boolean[7][7][7];
+        // A -> 0, B -> 1, c -> 2 ...
+        for (String a : allowed) {
+            candidates[a.charAt(0) - 'A'][a.charAt(1) - 'A'][a.charAt(2) - 'A'] = true;
+        }
+        // dfs to solve pyramid
+        return dfs(pyramid, depth, 0, candidates);
     }
 
-    private boolean dfs(String row, int idx, StringBuilder next) {
-        if (row.length() == 1) return true;
-
-        if (idx == row.length() - 1) {
-            String nextRow = next.toString();
-            if (bad.contains(nextRow)) return false;
-            boolean ok = dfs(nextRow, 0, new StringBuilder());
-            if (!ok) bad.add(nextRow);
-            return ok;
+    private boolean dfs(int[][] pyramid, int depth, int index, boolean[][][] candidates) {
+        // end condition, if we can reach the top of pyramid, return true
+        if (depth == 0 && index == 0) {
+            return true;
         }
-
-        String key = row.substring(idx, idx + 2);
-        if (!rules.containsKey(key)) return false;
-
-        for (char c : rules.get(key)) {
-            next.append(c);
-            if (dfs(row, idx + 1, next)) return true;
-            next.deleteCharAt(next.length() - 1);
+        // depth == index means that we finish this level, now go to level - 1
+        if (depth == index) {
+            return dfs(pyramid, depth - 1, 0, candidates);
+        }
+        // foreach index, we retrieve the itself and the int after it.
+        final int first = pyramid[depth][index];
+        final int second = pyramid[depth][index + 1];
+        // check whether we could find the third char(represent by int) in candidates
+        for (int i = 0; i < 7; i++) {
+            if (candidates[first][second][i]) {
+                // if found, set it to the position [level - 1][index]
+                pyramid[depth - 1][index] = i;
+                // then dfs, if return true, it means we could reach the top, else try other possibility
+                if (dfs(pyramid, depth, index + 1, candidates)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
