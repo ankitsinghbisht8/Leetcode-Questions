@@ -13,6 +13,10 @@ class Solution {
             if (words[(startIndex - i + n) % n].equals(target)) {
                 return moves;
             }
+            if (((startIndex + i) % n) == ((startIndex - i + n) % n) ||
+                    ((startIndex + i) % n) == ((startIndex - i + n) % n) + 1) {
+                return -1;
+            }
         }
         return -1;
     }
