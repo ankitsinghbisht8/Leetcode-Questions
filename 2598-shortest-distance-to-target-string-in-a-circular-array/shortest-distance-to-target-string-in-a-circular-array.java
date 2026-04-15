@@ -5,7 +5,7 @@ class Solution {
             return 0;
         }
         int moves = 0;
-        for (int i = 1; i < n; i++) {
+        for (int i = 1; i < n/2+1; i++) {
             moves++;
             if (words[(startIndex + i) % n].equals(target)) {
                 return moves;
@@ -13,10 +13,10 @@ class Solution {
             if (words[(startIndex - i + n) % n].equals(target)) {
                 return moves;
             }
-            if (((startIndex + i) % n) == ((startIndex - i + n) % n) ||
-                    ((startIndex + i) % n) == ((startIndex - i + n) % n) + 1) {
-                return -1;
-            }
+            // if (((startIndex + i) % n) == ((startIndex - i + n) % n) ||
+            //         ((startIndex + i) % n) == ((startIndex - i + n) % n) + 1) {
+            //     return -1;
+            // }
         }
         return -1;
     }
