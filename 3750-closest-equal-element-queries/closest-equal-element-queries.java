@@ -23,7 +23,7 @@ class Solution {
             }
 
             int idx = Collections.binarySearch(positions, q);
-            if (idx < 0) idx = -idx - 1;
+            // if (idx < 0) idx = -idx - 1;
 
             int dist = Math.min(
                 positions.get(idx + 1) - positions.get(idx),
