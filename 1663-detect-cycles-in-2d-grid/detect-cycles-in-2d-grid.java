@@ -1,66 +1,45 @@
 class Solution {
-
     public boolean containsCycle(char[][] grid) {
-        int m = grid.length;
-        int n = grid[0].length;
-        UnionFind uf = new UnionFind(m * n);
-        for (int i = 0; i < m; ++i) {
-            for (int j = 0; j < n; ++j) {
-                if (i > 0 && grid[i][j] == grid[i - 1][j]) {
-                    if (!uf.findAndUnite(i * n + j, (i - 1) * n + j)) {
-                        return true;
-                    }
-                }
-                if (j > 0 && grid[i][j] == grid[i][j - 1]) {
-                    if (!uf.findAndUnite(i * n + j, i * n + j - 1)) {
-                        return true;
-                    }
+        int m = grid.length, n = grid[0].length;
+        boolean[][] vis = new boolean[m][n];
+        int[][] dir = {{1,0},{-1,0},{0,1},{0,-1}};
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (!vis[i][j]) {
+                    if (bfs(i, j, grid, vis, dir)) return true;
                 }
             }
         }
         return false;
     }
-}
 
-class UnionFind {
+    private boolean bfs(int i, int j, char[][] grid, boolean[][] vis, int[][] dir) {
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{i, j, -1, -1}); 
+        vis[i][j] = true;
+        char ch = grid[i][j];
 
-    int[] parent;
-    int[] size;
-    int n;
-    int setCount;
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            int r = cur[0], c = cur[1], pr = cur[2], pc = cur[3];
 
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; ++i) {
-            parent[i] = i;
-        }
-        size = new int[n];
-        Arrays.fill(size, 1);
-        this.n = n;
-        setCount = n;
-    }
+            for (int[] d : dir) {
+                int nr = r + d[0];
+                int nc = c + d[1];
 
-    public int findset(int x) {
-        return parent[x] == x ? x : (parent[x] = findset(parent[x]));
-    }
+                if (nr < 0 || nc < 0 || nr >= grid.length || nc >= grid[0].length)
+                    continue;
 
-    public void unite(int x, int y) {
-        if (size[x] < size[y]) {
-            int temp = x;
-            x = y;
-            y = temp;
-        }
-        parent[y] = x;
-        size[x] += size[y];
-        --setCount;
-    }
+                if (grid[nr][nc] != ch) continue;
 
-    public boolean findAndUnite(int x, int y) {
-        int parentX = findset(x);
-        int parentY = findset(y);
-        if (parentX != parentY) {
-            unite(parentX, parentY);
-            return true;
+                if (nr == pr && nc == pc) continue;
+
+                if (vis[nr][nc]) return true;
+
+                vis[nr][nc] = true;
+                q.offer(new int[]{nr, nc, r, c});
+            }
         }
         return false;
     }
