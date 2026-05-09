@@ -1,41 +1,45 @@
 class Solution {
-
     public int[][] rotateGrid(int[][] grid, int k) {
         int m = grid.length;
         int n = grid[0].length;
-        int nlayer = Math.min(m / 2, n / 2); // level count
-        // enumerate each layer counterclockwise starting from the top-left corner
-        for (int layer = 0; layer < nlayer; ++layer) {
-            List<Integer> r = new ArrayList<>();
-            List<Integer> c = new ArrayList<>();
-            List<Integer> val = new ArrayList<>(); // each element's row index, column index, and value
-            for (int i = layer; i < m - layer - 1; ++i) { // left
-                r.add(i);
-                c.add(layer);
-                val.add(grid[i][layer]);
+        int top = 0;
+        int bottom = m - 1;
+        int left = 0;
+        int right = n - 1;
+        while (top < bottom && left < right) {
+            ArrayList<Integer> layer = new ArrayList<>();
+            for (int i = top; i <= bottom; i++) {
+                layer.add(grid[i][left]);
             }
-            for (int j = layer; j < n - layer - 1; ++j) { // down
-                r.add(m - layer - 1);
-                c.add(j);
-                val.add(grid[m - layer - 1][j]);
+            for (int i = left + 1; i <= right; i++) {
+                layer.add(grid[bottom][i]);
             }
-            for (int i = m - layer - 1; i > layer; --i) { // right
-                r.add(i);
-                c.add(n - layer - 1);
-                val.add(grid[i][n - layer - 1]);
+            for (int i = bottom - 1; i >= top; i--) {
+                layer.add(grid[i][right]);
             }
-            for (int j = n - layer - 1; j > layer; --j) { // up
-                r.add(layer);
-                c.add(j);
-                val.add(grid[layer][j]);
+            for (int i = right - 1; i > left; i--) {
+                layer.add(grid[top][i]);
             }
-            int total = val.size(); // total number of elements in each layer
-            int kk = k % total; // equivalent number of rotations
-            // find the value at each index after rotation
-            for (int i = 0; i < total; ++i) {
-                int idx = (i + total - kk) % total; // the index corresponding to the value after rotation
-                grid[r.get(i)][c.get(i)] = val.get(idx);
+            int size = layer.size();
+            int rotate = k % size;
+            Collections.rotate(layer, rotate);
+            int idx = 0;
+            for (int i = top; i <= bottom; i++) {
+                grid[i][left] = layer.get(idx++);
             }
+            for (int i = left + 1; i <= right; i++) {
+                grid[bottom][i] = layer.get(idx++);
+            }
+            for (int i = bottom - 1; i >= top; i--) {
+                grid[i][right] = layer.get(idx++);
+            }
+            for (int i = right - 1; i > left; i--) {
+                grid[top][i] = layer.get(idx++);
+            }
+            top++;
+            bottom--;
+            left++;
+            right--;
         }
         return grid;
     }
