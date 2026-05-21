@@ -1,42 +1,25 @@
 class Solution {
-    private class Trie {
-        Trie[] children = new Trie[10];
-    }
     public int longestCommonPrefix(int[] arr1, int[] arr2) {
-        Trie root = new Trie();
-        for (int n : arr1) {
-            int multi = multi(n);
-            Trie parent = root;
-            while(multi > 0) {
-                int d = (n/multi) % 10;
-                if (parent.children[d] == null) parent.children[d] = new Trie();
-                parent = parent.children[d];
-                multi /= 10;
+        Set<Integer> st = new HashSet<>();
+        int maxilen = 0;
+        for (int i = 0; i < arr1.length; i++) {
+            int num = arr1[i];
+            st.add(num);
+            while (num != 0) {
+                num = num / 10;
+                st.add(num);
             }
         }
-
-        int maxLen = 0;
-        for (int n : arr2) {
-            int multi = multi(n);
-            int len = 0;
-            Trie parent = root;
-            while (multi > 0) {
-                int d = (n/multi) % 10;
-                parent = parent.children[d];
-                if (parent == null) break;
-                len++;
-                maxLen = Math.max(maxLen, len);
-                multi /= 10;
+        for (int i = 0; i < arr2.length; i++) {
+            while (arr2[i]!= 0) {
+                if (st.contains(arr2[i])) {
+                    int len = String.valueOf(arr2[i]).length();
+                    maxilen = Math.max(maxilen, len);
+                    break;
+                }
+                arr2[i] = arr2[i] / 10;
             }
         }
-        return maxLen;
-    }
-
-    private int multi(int n) {
-        int mult = 1;
-        while (mult * 10 <= n) {
-            mult = mult * 10;
-        }
-        return mult;
+        return maxilen;
     }
 }
