@@ -1,24 +1,43 @@
 class Solution {
 
-    public int earliestFinishTime(
-            int[] landStartTime,
-            int[] landDuration,
-            int[] waterStartTime,
-            int[] waterDuration) {
-        int n = landStartTime.length;
-        int m = waterStartTime.length;
-        int res = Integer.MAX_VALUE;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                int land = landStartTime[i] + landDuration[i];
-                int land_water = Math.max(land, waterStartTime[j]) + waterDuration[j];
-                res = Math.min(res, land_water);
-
-                int water = waterStartTime[j] + waterDuration[j];
-                int water_land = Math.max(water, landStartTime[i]) + landDuration[i];
-                res = Math.min(res, water_land);
-            }
+    private int solve(
+        int[] start1,
+        int[] duration1,
+        int[] start2,
+        int[] duration2
+    ) {
+        int finish1 = Integer.MAX_VALUE;
+        for (int i = 0; i < start1.length; i++) {
+            finish1 = Math.min(finish1, start1[i] + duration1[i]);
         }
-        return res;
+        int finish2 = Integer.MAX_VALUE;
+        for (int i = 0; i < start2.length; i++) {
+            finish2 = Math.min(
+                finish2,
+                Math.max(start2[i], finish1) + duration2[i]
+            );
+        }
+        return finish2;
+    }
+
+    public int earliestFinishTime(
+        int[] landStartTime,
+        int[] landDuration,
+        int[] waterStartTime,
+        int[] waterDuration
+    ) {
+        int land_water = solve(
+            landStartTime,
+            landDuration,
+            waterStartTime,
+            waterDuration
+        );
+        int water_land = solve(
+            waterStartTime,
+            waterDuration,
+            landStartTime,
+            landDuration
+        );
+        return Math.min(land_water, water_land);
     }
 }
