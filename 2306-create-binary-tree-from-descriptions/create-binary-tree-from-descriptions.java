@@ -38,7 +38,7 @@ class Solution {
             parent.add(par);
             // List<Pair> al = new ArrayList<>();
             // al.add(new Pair(child, isleft));
-            parentToChild.computeIfAbsent(par, k-> new ArrayList<>()).add(new Pair(child,isleft));
+            parentToChild.computeIfAbsent(par, k -> new ArrayList<>()).add(new Pair(child,isleft));
         }
         parent.removeAll(children);
         TreeNode root = new TreeNode(parent.iterator().next());
