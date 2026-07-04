@@ -1,23 +1,51 @@
 class Solution {
-    int find(int[] root, int i) {
-        if (root[i] == i)
-            return i;
-        return root[i] = find(root, root[i]);
-    }
+    int[] parent;
+    int[] rank;
 
     public int minScore(int n, int[][] roads) {
-        int[] root = new int[n + 1];
-        for (int i = 0; i <= n; i++)
-            root[i] = i;
+        parent = new int[n + 1];
+        rank = new int[n + 1];
 
-        for (int[] r : roads)
-            root[find(root, r[0])] = find(root, r[1]);
+        for (int i = 1; i <= n; i++) {
+            parent[i] = i;
+        }
 
-        int res = 10001;
-        for (int[] r : roads)
-            if (find(root, r[0]) == find(root, 1))
-                res = Math.min(res, r[2]);
+        for (int[] road : roads) {
+            union(road[0], road[1]);
+        }
 
-        return res;
+        int root = find(1);
+        int ans = Integer.MAX_VALUE;
+
+        for (int[] road : roads) {
+            if (find(road[0]) == root) {
+                ans = Math.min(ans, road[2]);
+            }
+        }
+
+        return ans;
+    }
+
+    private int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);
+        }
+        return parent[x];
+    }
+
+    private void union(int a, int b) {
+        int pa = find(a);
+        int pb = find(b);
+
+        if (pa == pb) return;
+
+        if (rank[pa] < rank[pb]) {
+            parent[pa] = pb;
+        } else if (rank[pa] > rank[pb]) {
+            parent[pb] = pa;
+        } else {
+            parent[pb] = pa;
+            rank[pa]++;
+        }
     }
 }
