@@ -10,27 +10,24 @@ class Solution {
     }
 
     private int maxStones(
-        int[] suffixSum,
-        int maxTillNow,
-        int currIndex,
-        int[][] memo
-    ) {
-        // If currIndex + 2*maxTillNow lies outside the array, pick all remaining stones.
+            int[] suffixSum,
+            int maxTillNow,
+            int currIndex,
+            int[][] memo) {
         if (currIndex + 2 * maxTillNow >= suffixSum.length) {
             return suffixSum[currIndex];
         }
-        if (memo[currIndex][maxTillNow] > 0) return memo[currIndex][maxTillNow];
+        if (memo[currIndex][maxTillNow] > 0)
+            return memo[currIndex][maxTillNow];
         int res = Integer.MAX_VALUE;
         for (int i = 1; i <= 2 * maxTillNow; i++) {
             res = Math.min(
-                res,
-                maxStones(
-                    suffixSum,
-                    Math.max(i, maxTillNow),
-                    currIndex + i,
-                    memo
-                )
-            );
+                    res,
+                    maxStones(
+                            suffixSum,
+                            Math.max(i, maxTillNow),
+                            currIndex + i,
+                            memo));
         }
         memo[currIndex][maxTillNow] = suffixSum[currIndex] - res;
         return memo[currIndex][maxTillNow];
