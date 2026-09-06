@@ -11,16 +11,16 @@ class Solution {
         for(int i=1;i<2*n;i++){
             prefixarr[i]=prefixarr[i-1]+newarr[i];
         }
-
         for(int i=0;i<n;i++){
             long lefthalf=0;
+            int middleguy = n/2+i-1;
             if(i-1>=0){
-                lefthalf = prefixarr[n/2+i-1] - prefixarr[i-1];
+                lefthalf = prefixarr[middleguy] - prefixarr[i-1];
             }
             else{
                 lefthalf =  prefixarr[n/2+i-1];
             }
-            long righthalf = prefixarr[i+n-1]-prefixarr[n/2+i-1];
+            long righthalf = prefixarr[i+n-1]-prefixarr[middleguy];
             // System.out.println("firsthalf "+lefthalf+"..lasthalf.."+righthalf);
             if(lefthalf>righthalf){
                 ans++;
