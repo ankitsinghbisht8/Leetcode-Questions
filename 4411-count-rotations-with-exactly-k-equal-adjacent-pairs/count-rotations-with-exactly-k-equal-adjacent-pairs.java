@@ -2,7 +2,7 @@ class Solution {
     public int countRotations(String s, int k) {
         int n = s.length();
         String duplicate = s+s;
-        System.out.println(duplicate); 
+        // System.out.println(duplicate); 
         int arr[]=new int[n];
         int ans=0;
         for(int i=0;i<n;i++){
@@ -12,12 +12,12 @@ class Solution {
                     count++;
                 }
             }
-            System.out.println(""); 
+            // System.out.println(""); 
             arr[i]=count;
         }
-        for(int a:arr){
-            System.out.print(a+" ");
-        }
+        // for(int a:arr){
+        //     System.out.print(a+" ");
+        // }
 
         for(int i=0;i<n;i++){
             if(arr[i]==k){
